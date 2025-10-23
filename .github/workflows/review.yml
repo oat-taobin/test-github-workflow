@@ -38,15 +38,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: React to comment (if triggered by comment)
+      - name: Comment on PR
         uses: actions/github-script@v7
         with:
           script: |
-            await github.rest.reactions.createForIssueComment({
+            const prNumber = context.payload.pull_request?.number || 
+                           context.payload.issue?.number;
+
+            await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              comment_id: context.payload.comment.id,
-              content: 'eyes'
+              issue_number: prNumber,
+              body: '✅ Review process completed!'
             });
 
       - name: Run your review logic
